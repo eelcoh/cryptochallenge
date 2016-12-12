@@ -1,10 +1,17 @@
-{-# OPTIONS_GHC -F -pgmF hspec-discover #-}
-{-
+{-# LANGUAGE OverloadedStrings #-}
+module Set1.Challenge1Spec
+    ( spec
+    ) where
+
 import Test.Hspec
 import Test.QuickCheck
 import Control.Exception (evaluate)
 
 import Set1.Challenge1 as S1Ch1
+
+
+main :: IO ()
+main = hspec spec
 
 
 hexString =
@@ -13,12 +20,8 @@ hexString =
 solution =
   "SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t"
 
-main :: IO ()
-main = hspec $ do
-  describe "Challenge-1" $ do
+spec :: Spec
+spec = do
+  describe "Challenge1" $ do
     it "returns a base64 encoded string" $ do
-      S1Ch1.hexToBase64 hexString `shouldBe` solution
-
---main :: IO ()
---main = putStrLn "Test suite not yet implemented"
--}
+      S1Ch1.challenge hexString `shouldBe` solution
