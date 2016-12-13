@@ -2,6 +2,7 @@
 
 module Set1.Challenge4
     ( challenge
+    , string
     ) where
 
 import qualified Set1.Challenge3 as C3
@@ -18,6 +19,9 @@ challenge =
 --  |> List.sortBy (flip compare)
 --  |> C3.bestMatch
 
+string :: C3.Challenge -> [Char]
+string =
+  C3.string
 
 strings =
   --[ "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736" -- challenge 3

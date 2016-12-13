@@ -30,6 +30,7 @@ library
                      , statistics
                      , vector
                      , containers
+                     , split
   default-language:    Haskell2010
 
 executable cryptochallenge-exe

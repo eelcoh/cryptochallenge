@@ -7,7 +7,7 @@ import Test.Hspec
 import Test.QuickCheck
 import Control.Exception (evaluate)
 
-import Set1.Challenge5 as s1ch5
+import Set1.Challenge5 as S1Ch5
 
 
 main :: IO ()
@@ -27,5 +27,5 @@ solution =
 spec :: Spec
 spec = do
   describe "Challenge5" $ do
-    it "returns a base64 encoded string" $ do
-      S1Ch5.challenge5 cipher stringToCipher `shouldBe` solution
+    it "encrypts the inputstring with a cycled \"ICE\"" $ do
+      S1Ch5.challenge cipher stringToCipher `shouldBe` solution

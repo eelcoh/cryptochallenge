@@ -10,6 +10,7 @@ module Utils.Hex
     , xorByte
     , xorString
     , cycleCrypt
+    , blocks
     ) where
 
 import qualified Data.ByteString.Base64.Lazy as B64
@@ -22,8 +23,11 @@ import qualified Data.Bits as BB
 import GHC.Base (unsafeChr)
 import Data.Char (ord)
 import Data.Word (Word8)
+import Data.Function
 import Utils.Elmify
-
+import GHC.Int (Int64)
+import qualified Data.List as List
+import qualified Data.List.Split as Split
 
 hexToBytes :: [Char] -> B.ByteString
 hexToBytes str =
@@ -84,3 +88,76 @@ xorBytes cipher =
   map c2w cipher
   |> B.pack
   |> B.cycle
+
+hammingDistanceBS :: B.ByteString -> B.ByteString -> Int
+hammingDistanceBS bs1 bs2 =
+  B.zip bs1 bs2
+  |> hammingDistance
+
+hammingDistance :: [(Word8, Word8)] -> Int
+hammingDistance bss =
+  map (uncurry BB.xor) bss
+  |> map BB.popCount
+  |> sum
+
+hammingDistanceChar :: [Char] -> [Char] -> Int
+hammingDistanceChar str1 str2 =
+  zip (map c2w str1) (map c2w str2)
+  |> hammingDistance
+
+blocks :: Int -> Int -> B.ByteString -> [B.ByteString]
+blocks n sz bs =
+  let
+    s =
+      fromIntegral sz :: GHC.Int.Int64
+  in
+    case ((n <= 0), ((B.length bs) < s)) of
+      (True, _) ->
+        []
+
+      (False, True) ->
+        [bs]
+
+      (False, False) ->
+        let
+          (h, t) =
+            B.splitAt s bs
+        in
+          h : blocks (n - 1) sz t
+
+computeKeyLength :: Int -> [B.ByteString] -> (Int, Double)
+computeKeyLength sz bss =
+  let
+    average l =
+      sum l / (List.genericLength l)
+
+    pairs els =
+      Split.splitEvery 2 els
+      |> map (\[bs1, bs2] -> (bs1, bs2))
+
+    computed =
+      pairs bss
+      |> map (uncurry hammingDistanceBS)
+      |> map (\d -> (fromIntegral d) / (fromIntegral sz))
+      |> average
+  in
+    (sz, computed)
+
+
+
+findKeyLength :: B.ByteString -> [(Int, Double)]
+findKeyLength bs =
+  let
+    keyLenhgths =
+      [2..40]
+
+    numBlocks =
+      4
+
+    blks l =
+      blocks numBlocks l bs
+
+  in
+    map (\kl -> (kl, blks kl)) keyLenhgths
+    |> map (uncurry computeKeyLength)
+    |> List.sortBy (compare `on` snd)
