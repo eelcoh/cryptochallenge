@@ -2,26 +2,19 @@
 
 module Set1.Challenge4
     ( challenge
-    , string
     ) where
 
-import qualified Set1.Challenge3 as C3
 import Utils.Elmify
-import qualified Data.List as List
 
-challenge :: C3.Challenge
+import Crypt.Attempt (Match, attempt, bestMatch)
+
+
+challenge :: Match
 challenge =
-  --map (C3.bestMatch . C3.challenge) strings
-  map C3.challenge strings
---  |> concat
---  |> List.sort
-  |> C3.bestMatch
---  |> List.sortBy (flip compare)
---  |> C3.bestMatch
+  map attempt strings
+  |> bestMatch
 
-string :: C3.Challenge -> [Char]
-string =
-  C3.string
+
 
 strings =
   --[ "1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736" -- challenge 3

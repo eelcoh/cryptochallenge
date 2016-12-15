@@ -2,7 +2,7 @@
 
 module Main where
 
-import Set1.Challenge1 as S1Ch1
+import Set1.Challenge1 as C1
 import Set1.Challenge3 as C3
 import Set1.Challenge4 as C4
 import Set1.Challenge5 as C5
@@ -24,7 +24,7 @@ main = do
 
 s1ch1 :: IO ()
 s1ch1 =
-  print $ S1Ch1.challenge hexString
+  print $ C1.challenge hexString
 
   where
     hexString =

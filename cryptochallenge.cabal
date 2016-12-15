@@ -20,9 +20,15 @@ library
                      , Set1.Challenge3
                      , Set1.Challenge4
                      , Set1.Challenge5
-                     , Utils.Hex
+                     , Crypto.Attempt
+                     , Crypto.Key
+                     , Crypto.Xor
+                     , Stats.Chi
+                     , Stats.Frequency
+                     , Stats.Simple
+                     , Stats.Hamming
+                     , Utils.Bytes
                      , Utils.Elmify
-                     , Utils.Stats
   build-depends:       base >= 4.7 && < 5
                      , base16-bytestring
                      , base64-bytestring
