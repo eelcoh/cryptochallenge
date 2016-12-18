@@ -8,7 +8,6 @@ import qualified Data.ByteString.Lazy as B
 import Data.Word (Word8)
 
 import Utils.Elmify ((|>))
-import Utils.Bytes (c2w, w2c, bytesToHex, hexToBytes)
 import qualified Data.Bits as BB
 
 

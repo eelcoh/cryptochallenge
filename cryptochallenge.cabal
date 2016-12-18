@@ -21,6 +21,7 @@ library
                      , Set1.Challenge4
                      , Set1.Challenge5
                      , Set1.Challenge6
+                     , Set1.Challenges
                      , Bytes.Utils
                      , Bytes.Xor
                      , Crypto.Attempt

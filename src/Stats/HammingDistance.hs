@@ -3,8 +3,6 @@ module Stats.HammingDistance
   , strings
   ) where
 
-
-import Utils.Xor (tupleXor)
 import qualified Data.ByteString.Lazy as B
 import Data.Word (Word8)
 import Bytes.Utils (c2w)
@@ -18,7 +16,7 @@ bytestrings (bs1, bs2) =
 
 hamming :: [(Word8, Word8)] -> Int
 hamming bss =
-  map tupleXor bss
+  map (uncurry BB.xor) bss
   |> map BB.popCount
   |> sum
 
