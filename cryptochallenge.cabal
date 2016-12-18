@@ -15,13 +15,7 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Set1.Challenge1
-                     , Set1.Challenge2
-                     , Set1.Challenge3
-                     , Set1.Challenge4
-                     , Set1.Challenge5
-                     , Set1.Challenge6
-                     , Set1.Challenges
+  exposed-modules:     Set1.Challenges
                      , Bytes.Utils
                      , Bytes.Xor
                      , Crypto.Attempt

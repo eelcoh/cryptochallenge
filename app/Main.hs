@@ -2,12 +2,6 @@
 
 module Main where
 
-import Set1.Challenge1 as C1
-import Set1.Challenge2 as C2
-import Set1.Challenge3 as C3
-import Set1.Challenge4 as C4
-import Set1.Challenge5 as C5
-import Set1.Challenge6 as C6
 import Set1.Challenges as S1
 
 import Utils.Elmify ((|>))
