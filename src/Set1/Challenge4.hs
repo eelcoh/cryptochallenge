@@ -6,7 +6,7 @@ module Set1.Challenge4
 
 import Utils.Elmify
 import qualified Bytes.Utils as Bytes
-import Crypto.AttemptBS (Match, attempt, bestMatch)
+import Crypto.Attempt (Match, attempt, bestMatch)
 
 
 challenge :: Match

@@ -11,8 +11,8 @@ module Crypto.Attempt
 import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString.Base16.Lazy as B16
 
-import qualified Utils.Bytes as Bytes
-import qualified Utils.Xor as Xor
+import qualified Bytes.Utils as Bytes
+import qualified Bytes.Xor as Xor
 import qualified Stats.Chi as Chi
 import qualified Stats.Simple as Simple
 
@@ -20,19 +20,20 @@ import qualified Data.List as List
 import qualified Data.Char as Ch
 import qualified Data.Bits as Bits
 
+import Data.Word (Word8)
+
 import Data.Function (on)
 import Utils.Elmify ((|>))
 import Text.Printf (printf)
 
 data Match = Match
-  { hexString :: [Char]
-  , c :: Char
+  { c :: Word8
   , str :: [Char]
   , score :: Int
   , chi :: Double
   }
 
-char :: Match -> Char
+char :: Match -> Word8
 char ch =
   c ch
 
@@ -52,22 +53,24 @@ instance Eq Match where
         ]
 
 instance Ord Match where
-  c1 `compare` c2 = (score c1) `compare` (score c2)
+  c1 `compare` c2 = (chi c1) `compare` (chi c2)
 
+attemptFromChars :: [Char] -> Match
+attemptFromChars hexString =
+  Bytes.hexStringToByteString hexString
+  |> attempt
 
-attempt :: [Char] -> Match
-attempt hexString =
+attempt :: B.ByteString -> Match
+attempt bs =
   let
     chars =
       [1..255]
       |> List.map Ch.chr -- [\001 .. \255]
+      |> List.map Bytes.c2w
       -- ' ' : ['A'..'Z']
 
-    xorBytes =
-      Bytes.hexToBytes hexString
-
     results =
-      [ decrypt hexString xorBytes c | c <- chars ]
+      [ decrypt bs c | c <- chars ]
 
   in
     results
@@ -76,13 +79,13 @@ attempt hexString =
 bestMatch :: [Match] -> Match
 bestMatch decrypts =
   List.minimumBy (compare `on` chi) decrypts
-  -- List.maximumBy (compare `on` score) decrypts
 
-decrypt :: [Char] -> B.ByteString -> Char -> Match
-decrypt hexString bytes c =
+decrypt :: B.ByteString -> Word8 -> Match
+decrypt bs c =
   let
     decipherd =
-      Xor.xorString bytes c
+      Xor.cycleKeyChar bs c
+      |> Bytes.byteStringToString
 
     score =
       Simple.simpleFrequencyWeighted decipherd
@@ -90,4 +93,4 @@ decrypt hexString bytes c =
     chi =
       Chi.chi decipherd
   in
-    Match hexString c decipherd score chi
+    Match c decipherd score chi

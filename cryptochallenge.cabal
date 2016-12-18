@@ -23,7 +23,7 @@ library
                      , Set1.Challenge6
                      , Bytes.Utils
                      , Bytes.Xor
-                     , Crypto.AttemptBS
+                     , Crypto.Attempt
                      , Crypto.Key
                      , Stats.Chi
                      , Stats.Frequency

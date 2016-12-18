@@ -7,7 +7,7 @@ module Set1.Challenge3
 import qualified Data.ByteString.Lazy as B
 
 import qualified Bytes.Utils as Bytes
-import Crypto.AttemptBS (Match, attempt)
+import Crypto.Attempt (Match, attempt)
 
 challenge :: [Char] -> Match
 challenge =

@@ -9,7 +9,7 @@ import qualified Data.List as List
 import qualified Data.List.Split as Split
 import Data.Function (on)
 
-import qualified Crypto.AttemptBS as Attempt
+import qualified Crypto.Attempt as Attempt
 import qualified Stats.HammingDistance as Hamming
 
 import qualified Bytes.Utils as Bytes
