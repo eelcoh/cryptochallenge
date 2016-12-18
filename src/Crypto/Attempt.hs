@@ -12,7 +12,9 @@ import qualified Data.ByteString.Lazy as B
 import qualified Data.ByteString.Base16.Lazy as B16
 
 import qualified Utils.Bytes as Bytes
-import qualified Utils.Stats as Stats
+import qualified Utils.Xor as Xor
+import qualified Stats.Chi as Chi
+import qualified Stats.Simple as Simple
 
 import qualified Data.List as List
 import qualified Data.Char as Ch
@@ -65,7 +67,7 @@ attempt hexString =
       Bytes.hexToBytes hexString
 
     results =
-      [ decrypt' hexString xorBytes c | c <- chars ]
+      [ decrypt hexString xorBytes c | c <- chars ]
 
   in
     results
@@ -80,12 +82,12 @@ decrypt :: [Char] -> B.ByteString -> Char -> Match
 decrypt hexString bytes c =
   let
     decipherd =
-      Bytes.xorString bytes c
+      Xor.xorString bytes c
 
     score =
-      Stats.simpleFrequencyWeighted decipherd
+      Simple.simpleFrequencyWeighted decipherd
 
     chi =
-      Stats.chi decipherd
+      Chi.chi decipherd
   in
     Match hexString c decipherd score chi

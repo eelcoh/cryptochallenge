@@ -17,13 +17,14 @@ import GHC.Base (unsafeChr)
 import Data.Char (ord)
 import Data.Word (Word8)
 import Data.Function
+import qualified Data.List.Split as Split
 
-import Utils.Elmify (|>)
+import Utils.Elmify ((|>))
 
 hexToBytes :: [Char] -> B.ByteString
 hexToBytes str =
   map c2w str
-  |> B.Pack
+  |> B.pack
   |> B16.decode
   |> fst
 

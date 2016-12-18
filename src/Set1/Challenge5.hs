@@ -4,8 +4,8 @@ module Set1.Challenge5
     ( challenge
     ) where
 
-import qualified Crypto.Xor (cycleXor)
+import qualified Utils.Xor as Xor
 
 challenge :: [Char] -> [Char] -> [Char]
 challenge  =
-  cycleXor
+  Xor.cycleXor

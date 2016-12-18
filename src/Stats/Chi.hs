@@ -2,20 +2,23 @@ module Stats.Chi
   ( chi
   ) where
 
+import qualified Data.List as List
 import qualified Data.Map as Map
 import qualified Stats.Frequency as Frequency
+
+import Utils.Elmify ((|>))
 
 chi :: [Char] -> Double
 chi str =
   let
     observedFreqTable =
-      frequency str
-      |> fractionFrequency
+      Frequency.frequency str
+      |> Frequency.fractionFrequency
       |> Map.fromList
       |> (flip Map.union) Frequency.empty
 
     frequencyTuples =
-      Map.intersectionWith (,) observedFreqTable englishFreqTable
+      Map.intersectionWith (,) observedFreqTable Frequency.english
       |> Map.elems
   in
     chiSqr frequencyTuples

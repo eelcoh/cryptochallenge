@@ -2,8 +2,12 @@ module Stats.Frequency
   ( FrequencyMap
   , empty
   , english
+  , frequency
+  , fractionFrequency
   ) where
 
+import qualified Data.List as List
+import qualified Data.Char as Char
 import qualified Data.Map as Map
 
 import Utils.Elmify

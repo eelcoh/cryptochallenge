@@ -1,6 +1,21 @@
+{-# LANGUAGE OverloadedStrings #-}
 
+module Set1.Challenge6
+    ( challenge
+    ) where
 
+import Crypto.Key as Key
+import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Base64.Lazy as B64
+import Utils.Elmify ((|>))
+import Bytes.Utils (c2w)
 
+challenge :: B.ByteString -> [(B.ByteString, B.ByteString)]
+challenge contents =
+  -- Key.search contents
+  -- |> map (\ (a, b) -> (a, B64.decodeLenient b))
+  B64.decodeLenient contents
+  |> Key.search
 
 {-
 

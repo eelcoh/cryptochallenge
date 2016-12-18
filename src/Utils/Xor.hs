@@ -2,8 +2,13 @@ module Utils.Xor
   ( fixedXor
   , cycleXor
   , tupleXor
+  , xorString
   ) where
 
+import qualified Data.ByteString.Lazy as B
+import Data.Word (Word8)
+
+import Utils.Elmify ((|>))
 import Utils.Bytes (c2w, w2c, bytesToHex, hexToBytes)
 import qualified Data.Bits as BB
 
@@ -41,10 +46,10 @@ cycleXor :: [Char] -> [Char] -> [Char]
 cycleXor key chars =
   let
     bytes =
-      xorBytes chars
+      xorBytes key
 
     cycledKey =
-      map c2w key
+      map c2w chars
 
     xorred =
       zipWith BB.xor cycledKey (B.unpack bytes)

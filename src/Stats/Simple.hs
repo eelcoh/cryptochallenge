@@ -1,12 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Stats.Stats
-  ( frequency
-  , simpleFrequency
+module Stats.Simple
+  ( simpleFrequency
   , simpleFrequencyWeighted
   ) where
 
-import Utils.Elmify (|>)
+import Utils.Elmify ((|>))
 
 import qualified Data.Map as Map
 import qualified Data.List as List

@@ -6,13 +6,14 @@ module Crypto.Key
 
 import qualified Data.ByteString.Lazy as B
 import qualified Data.List as List
+import qualified Data.List.Split as Split
 import Data.Function (on)
 
-import qualified Crypto.Attempt as Attempt
-import qualified Crypto.HammingDistance as Hamming
+import qualified Crypto.AttemptBS as Attempt
+import qualified Stats.HammingDistance as Hamming
 
-import qualified Utils.Bytes as Bytes
-import qualified Utils.Xor as Xor
+import qualified Bytes.Utils as Bytes
+import qualified Bytes.Xor as Xor
 import Utils.Elmify ((|>))
 
 
@@ -59,20 +60,20 @@ search bs =
     -- step 1, 2 an 3 happen in findKeyLength
     keyLengths =
       findKeyLength bs
-      |> take 4   -- We may have a keysize. To be sure we take the four best
+      |> take 1   -- We may have a keysize. To be sure we take the four best
                   -- matching keysizes.
 
     -- for all candidate keylengths, determine the key according to step 4 to 8.
     -- one of these should be the one.
     keys =
-      map (findKey bs) keyLengths
+      map ((findKey bs) . fst) keyLengths
 
     -- here is where the actual decryption takes place.
     -- Xor.cycleXor takes a key and a ByteString, and then cycles the key as
     -- long is required (as long as the bytestring is), and 'xors' the resulting
     -- bytestring agains the given one.
     decrypt k =
-      (k, Xor.cycleXor k bs)
+      (k, Xor.cycleKey bs k)
 
   in
     -- returns a number of results. Of which one is presumably the one
@@ -90,7 +91,7 @@ findKeyLength bs =
     -- "You could proceed perhaps with the smallest 2-3 KEYSIZE values. Or take 4
     -- KEYSIZE blocks instead of 2 and average the distances."
     numBlocks =
-      4
+      12
 
     -- helper function: from bs, take numBlocks blocks with length l
     -- and compute the average hamming distance for these blocks
@@ -116,9 +117,18 @@ computeDistance sz bss =
 
     -- make the list of bytestrings into tuple pairs
     -- so [a, b, c, d, ..] becomes [(a, b), (c, d), ..]
+    -- pairs els =
+    --   Split.splitEvery 2 els
+    --   |> pairs'
+
     pairs els =
-      Split.splitEvery 2 els
-      |> map (\[bs1, bs2] -> (bs1, bs2))
+      case els of
+        [] ->
+          []
+        a:[] ->
+          []
+        a:b:rest ->
+          (a,b):(pairs rest)
 
     normalise d =
       (fromIntegral d) / (fromIntegral sz)
@@ -149,7 +159,7 @@ findKey bs sz =
 
     -- step 6 & 7
     key =
-      map (Bytes.c2w . Attempt.char . Attempt.attempt) transposed
+      map (Attempt.char . Attempt.attempt) transposed
 
   in
     -- step 8

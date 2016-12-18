@@ -6,13 +6,14 @@ import Set1.Challenge1 as C1
 import Set1.Challenge3 as C3
 import Set1.Challenge4 as C4
 import Set1.Challenge5 as C5
-import Utils.Hex as Hex
-import Utils.Elmify
-import qualified Utils.Stats as Stats
+import Set1.Challenge6 as C6
+import Utils.Elmify ((|>))
+import qualified Stats.Frequency as Frequency
 --import qualified Data.ByteString as B
-import qualified Data.ByteString.Char8 as B
+import qualified Data.ByteString.Lazy as B
 import Text.Printf
 import Prelude
+
 
 main :: IO ()
 main = do
@@ -20,6 +21,8 @@ main = do
   s1ch3
   s1ch4
   s1ch5
+  s1ch6
+  s1ch6b
 --  s1ch3a
 
 s1ch1 :: IO ()
@@ -49,8 +52,8 @@ s1ch3 =
 
 s1ch3a :: IO ()
 s1ch3a =
-  Stats.frequency "Cooking MC's like a pound of bacon"
-  |> Stats.fractionFrequency
+  Frequency.frequency "Cooking MC's like a pound of bacon"
+  |> Frequency.fractionFrequency
   |> show
   |> print
 
@@ -71,3 +74,25 @@ s1ch5 =
     putStrLn $ C5.challenge "ICE" stringToCipher
     where
       stringToCipher = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+
+s1ch6 ::IO ()
+s1ch6 =
+  do
+    fileContents <- B.readFile "./static/6.txt"
+    mapM_ (putStrLn . showRes) $ C6.challenge fileContents
+
+    where
+      showRes (key, res) =
+        (show key) ++ " : " ++ (show (B.take 64 res))
+
+s1ch6b :: IO ()
+s1ch6b =
+  do
+    mapM_ (putStrLn . showRes) $ C6.challenge str2decrypt
+
+    where
+      showRes (key, res) =
+        (show key) ++ " : " ++ (show (B.take 64 res))
+      str2decrypt =
+        "CzY3JyorLmNiLC5paSojaToqPGMkIC1iPWM0PComImMkJydlJyooKy8gQwplLixlKjEkMzplPisgJ2MMaSsgKDFlKGMmMC4nKC8="
+        -- "AAsDBgMHAgcCCgILAg4GAwYCAgwCDgYJBgkCCgIDBgkDCgIKAwwGAwIEAgACDQYCAw0GAwMEAwwCCgIGAgIGAwIEAgcCBwYFAgcCCgIIAgsCDwIABAMACgYFAg4CDAYFAgoDAQIEAwMDCgYFAw4CCwIAAgcGAwAMBgkCCwIAAggDAQYFAggGAwIGAwACDgIHAggCDw=="

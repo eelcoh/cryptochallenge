@@ -20,15 +20,18 @@ library
                      , Set1.Challenge3
                      , Set1.Challenge4
                      , Set1.Challenge5
-                     , Crypto.Attempt
+                     , Set1.Challenge6
+                     , Bytes.Utils
+                     , Bytes.Xor
+                     , Crypto.AttemptBS
                      , Crypto.Key
-                     , Crypto.Xor
                      , Stats.Chi
                      , Stats.Frequency
                      , Stats.Simple
-                     , Stats.Hamming
+                     , Stats.HammingDistance
                      , Utils.Bytes
                      , Utils.Elmify
+                     , Utils.Xor
   build-depends:       base >= 4.7 && < 5
                      , base16-bytestring
                      , base64-bytestring

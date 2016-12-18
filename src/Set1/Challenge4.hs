@@ -5,13 +5,13 @@ module Set1.Challenge4
     ) where
 
 import Utils.Elmify
-
-import Crypt.Attempt (Match, attempt, bestMatch)
+import qualified Bytes.Utils as Bytes
+import Crypto.AttemptBS (Match, attempt, bestMatch)
 
 
 challenge :: Match
 challenge =
-  map attempt strings
+  map (attempt . Bytes.hexStringToByteString) strings
   |> bestMatch
 
 

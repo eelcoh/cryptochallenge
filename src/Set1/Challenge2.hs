@@ -6,7 +6,7 @@ module Set1.Challenge2
 
 import qualified Data.ByteString.Lazy as B
 
-import Utils.Bytes (fixedXor)
+import Utils.Xor (fixedXor)
 
 challenge :: [Char] -> [Char] -> B.ByteString
 challenge =
