@@ -7,7 +7,8 @@ import Test.Hspec
 import Test.QuickCheck
 import Control.Exception (evaluate)
 
-import qualified Set1.Challenge4 as C4
+import qualified Set1.Challenges as S1
+import qualified Crypto.Attempt as Attempt
 
 
 main :: IO ()
@@ -21,4 +22,4 @@ spec :: Spec
 spec = do
   describe "Challenge 4" $ do
     it ("should find the one string that when decrypted says " ++ result) $ do
-      (C4.string C4.challenge) `shouldBe` result
+      (Attempt.string S1.challenge4) `shouldBe` result

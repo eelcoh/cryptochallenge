@@ -7,7 +7,7 @@ import Test.Hspec
 import Test.QuickCheck
 import Control.Exception (evaluate)
 
-import Set1.Challenge2 as S1Ch2
+import Set1.Challenges as S1
 
 
 main :: IO ()
@@ -30,4 +30,4 @@ spec :: Spec
 spec = do
   describe "Challenge1" $ do
     it "returns a base64 encoded string" $ do
-      S1Ch2.challenge input xor `shouldBe` solution
+      S1.challenge2 input xor `shouldBe` solution

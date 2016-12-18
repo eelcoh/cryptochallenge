@@ -7,7 +7,8 @@ import Test.Hspec
 import Test.QuickCheck
 import Control.Exception (evaluate)
 
-import qualified Set1.Challenge3 as C3
+import qualified Set1.Challenges as S1
+import qualified Crypto.Attempt as Attempt
 
 
 main :: IO ()
@@ -21,6 +22,6 @@ spec :: Spec
 spec = do
   describe "Challenge" $ do
     it "should be crypted with an X" $ do
-      (C3.char $ C3.challenge input) `shouldBe` 'X'
+      (Attempt.char $ S1.challenge3 input) `shouldBe` 'X'
     it "should read \"Cooking MC's like a pound of bacon\"" $ do
-      (C3.string $ C3.challenge input) `shouldBe` "Cooking MC's like a pound of bacon"
+      (Attempt.string $ S1.challenge3 input) `shouldBe` "Cooking MC's like a pound of bacon"
