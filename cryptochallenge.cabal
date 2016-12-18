@@ -29,9 +29,7 @@ library
                      , Stats.Frequency
                      , Stats.Simple
                      , Stats.HammingDistance
-                     , Utils.Bytes
                      , Utils.Elmify
-                     , Utils.Xor
   build-depends:       base >= 4.7 && < 5
                      , base16-bytestring
                      , base64-bytestring

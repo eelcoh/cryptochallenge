@@ -30,4 +30,4 @@ spec :: Spec
 spec = do
   describe "Challenge1" $ do
     it "returns a base64 encoded string" $ do
-      S1Ch2.challenge2 input xor `shouldBe` solution
+      S1Ch2.challenge input xor `shouldBe` solution

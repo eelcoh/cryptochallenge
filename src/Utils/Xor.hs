@@ -45,14 +45,14 @@ xorString bStr c =
 cycleXor :: [Char] -> [Char] -> [Char]
 cycleXor key chars =
   let
-    bytes =
+    cycledKey =
       xorBytes key
 
-    cycledKey =
+    bytes =
       map c2w chars
 
     xorred =
-      zipWith BB.xor cycledKey (B.unpack bytes)
+      zipWith BB.xor (B.unpack cycledKey) bytes
       |> B.pack
   in
     bytesToHex xorred

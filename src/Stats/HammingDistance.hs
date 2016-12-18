@@ -7,7 +7,7 @@ module Stats.HammingDistance
 import Utils.Xor (tupleXor)
 import qualified Data.ByteString.Lazy as B
 import Data.Word (Word8)
-import Utils.Bytes (c2w, w2c)
+import Bytes.Utils (c2w)
 import Utils.Elmify ((|>))
 import qualified Data.Bits as BB
 

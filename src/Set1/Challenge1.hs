@@ -6,8 +6,8 @@ module Set1.Challenge1
 
 import qualified Data.ByteString.Lazy as B
 
-import Utils.Bytes (hexToBase64)
+import Bytes.Utils (hexstringToBase64)
 
 challenge :: [Char] -> B.ByteString
 challenge =
-  hexToBase64
+  hexstringToBase64

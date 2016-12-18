@@ -12,8 +12,6 @@ import Bytes.Utils (c2w)
 
 challenge :: B.ByteString -> [(B.ByteString, B.ByteString)]
 challenge contents =
-  -- Key.search contents
-  -- |> map (\ (a, b) -> (a, B64.decodeLenient b))
   B64.decodeLenient contents
   |> Key.search
 

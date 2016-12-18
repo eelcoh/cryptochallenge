@@ -71,7 +71,7 @@ s1ch4 =
 s1ch5 :: IO ()
 s1ch5 =
   do
-    putStrLn $ C5.challenge "ICE" stringToCipher
+    putStrLn $ C5.challenge stringToCipher "ICE" 
     where
       stringToCipher = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
 
