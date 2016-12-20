@@ -20,6 +20,7 @@ library
                      , Bytes.Xor
                      , Crypto.Attempt
                      , Crypto.Key
+                     , Crypto.AES
                      , Stats.Chi
                      , Stats.Frequency
                      , Stats.Simple
@@ -33,6 +34,8 @@ library
                      , vector
                      , containers
                      , split
+                     , cryptocipher
+                     , crypto-cipher-types
   default-language:    Haskell2010
 
 executable cryptochallenge-exe

@@ -8,7 +8,7 @@ module Crypto.Attempt
     , bestMatch
     ) where
 
-import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Base16.Lazy as B16
 
 import qualified Bytes.Utils as Bytes
@@ -60,7 +60,7 @@ attemptFromChars hexString =
   Bytes.hexStringToByteString hexString
   |> attempt
 
-attempt :: B.ByteString -> Match
+attempt :: BL.ByteString -> Match
 attempt bs =
   let
     chars =
@@ -80,7 +80,7 @@ bestMatch :: [Match] -> Match
 bestMatch decrypts =
   List.minimumBy (compare `on` chi) decrypts
 
-decrypt :: B.ByteString -> Word8 -> Match
+decrypt :: BL.ByteString -> Word8 -> Match
 decrypt bs c =
   let
     decipherd =

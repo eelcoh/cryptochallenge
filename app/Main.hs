@@ -7,7 +7,8 @@ import Set1.Challenges as S1
 import Utils.Elmify ((|>))
 import qualified Stats.Frequency as Frequency
 --import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString as B
 import Text.Printf
 import Prelude
 
@@ -21,6 +22,7 @@ main = do
   s1ch5
   s1ch6
   s1ch6b
+  s1ch7
 --  s1ch3a
 
 s1ch1 :: IO ()
@@ -95,13 +97,13 @@ s1ch6 ::IO ()
 s1ch6 =
   do
     putStrLn "Set 1, challenge 6"
-    fileContents <- B.readFile "./static/6.txt"
+    fileContents <- BL.readFile "./static/6.txt"
     mapM_ (putStrLn . showRes) $ S1.challenge6 fileContents
     putStrLn ""
 
     where
       showRes (key, res) =
-        (show key) ++ " : " ++ (show (B.take 64 res))
+        (show key) ++ " : " ++ (show (BL.take 64 res))
 
 s1ch6b :: IO ()
 s1ch6b =
@@ -112,7 +114,19 @@ s1ch6b =
 
     where
       showRes (key, res) =
-        (show key) ++ " : " ++ (show (B.take 64 res))
+        (show key) ++ " : " ++ (show (BL.take 64 res))
       str2decrypt =
         "CzY3JyorLmNiLC5paSojaToqPGMkIC1iPWM0PComImMkJydlJyooKy8gQwplLixlKjEkMzplPisgJ2MMaSsgKDFlKGMmMC4nKC8="
         -- "AAsDBgMHAgcCCgILAg4GAwYCAgwCDgYJBgkCCgIDBgkDCgIKAwwGAwIEAgACDQYCAw0GAwMEAwwCCgIGAgIGAwIEAgcCBwYFAgcCCgIIAgsCDwIABAMACgYFAg4CDAYFAgoDAQIEAwMDCgYFAw4CCwIAAgcGAwAMBgkCCwIAAggDAQYFAggGAwIGAwACDgIHAggCDw=="
+
+s1ch7 ::IO ()
+s1ch7 =
+  do
+    putStrLn "Set 1, challenge 7"
+    fileContents <- B.readFile "./static/7.txt"
+    putStrLn $ showRes $ S1.challenge7 "YELLOW SUBMARINE" fileContents
+    putStrLn ""
+
+    where
+      showRes res =
+        show (B.take 64 res)

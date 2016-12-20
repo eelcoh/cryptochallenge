@@ -3,15 +3,15 @@ module Stats.HammingDistance
   , strings
   ) where
 
-import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Lazy as BL
 import Data.Word (Word8)
 import Bytes.Utils (c2w)
 import Utils.Elmify ((|>))
 import qualified Data.Bits as BB
 
-bytestrings :: (B.ByteString, B.ByteString) -> Int
+bytestrings :: (BL.ByteString, BL.ByteString) -> Int
 bytestrings (bs1, bs2) =
-  B.zip bs1 bs2
+  BL.zip bs1 bs2
   |> hamming
 
 hamming :: [(Word8, Word8)] -> Int
