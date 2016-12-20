@@ -4,7 +4,8 @@ module Bytes.Xor
   , cycleKeyChar
   ) where
 
-import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString as B
+import qualified Data.ByteString.Lazy as BL
 import Data.Word (Word8)
 
 import Utils.Elmify ((|>))
@@ -27,7 +28,10 @@ cycleKey :: B.ByteString -> B.ByteString -> B.ByteString
 cycleKey bs key =
   let
     cycledKey =
-      B.cycle key
+      BL.fromStrict key
+      |>BL.cycle
+
   in
-    B.zipWith BB.xor cycledKey bs
-    |> B.pack
+    BL.zipWith BB.xor cycledKey (BL.fromStrict bs)
+    |> BL.pack
+    |> BL.toStrict

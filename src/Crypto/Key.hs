@@ -4,7 +4,7 @@ module Crypto.Key
     ( search
     ) where
 
-import qualified Data.ByteString.Lazy as BL
+import qualified Data.ByteString as B
 import qualified Data.List as List
 import qualified Data.List.Split as Split
 import Data.Function (on)
@@ -54,7 +54,7 @@ import Utils.Elmify ((|>))
 
 8.  Put them together and you have the key.
 -}
-search :: BL.ByteString -> [(BL.ByteString, BL.ByteString)]
+search :: B.ByteString -> [(B.ByteString, B.ByteString)]
 search bs =
   let
     -- step 1, 2 an 3 happen in findKeyLength
@@ -80,7 +80,7 @@ search bs =
     map decrypt keys
 
 -- step 1-2-3
-findKeyLength :: BL.ByteString -> [(Int, Double)]
+findKeyLength :: B.ByteString -> [(Int, Double)]
 findKeyLength bs =
   let
     -- step 1
@@ -106,7 +106,7 @@ findKeyLength bs =
     |> List.sortBy (compare `on` snd)
 
 
-computeDistance :: Int -> [BL.ByteString] -> (Int, Double)
+computeDistance :: Int -> [B.ByteString] -> (Int, Double)
 computeDistance sz bss =
   let
     -- helper function to get the average of a list of Doubles
@@ -149,13 +149,13 @@ computeDistance sz bss =
 
 
 -- step 4-5-6-7-8
-findKey :: BL.ByteString -> Int -> BL.ByteString
+findKey :: B.ByteString -> Int -> B.ByteString
 findKey bs sz =
   let
     -- step 5
     transposed =
       Bytes.blocks sz bs
-      |> BL.transpose
+      |> B.transpose
 
     -- step 6 & 7
     key =
@@ -163,13 +163,13 @@ findKey bs sz =
 
   in
     -- step 8
-    BL.pack key
+    B.pack key
 
 
 
 -- just a utility to take the first n blocks of the blocks returned by the
 -- blocks function in the Utils.Bytes package.
-blocks :: Int -> Int -> BL.ByteString -> [BL.ByteString]
+blocks :: Int -> Int -> B.ByteString -> [B.ByteString]
 blocks n sz bs =
   Bytes.blocks sz bs
   |> take n

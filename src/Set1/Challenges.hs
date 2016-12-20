@@ -8,13 +8,11 @@ module Set1.Challenges
     , challenge5
     , challenge6
     , challenge7
+    , challenge8
     ) where
 
 import qualified Data.ByteString as B
-import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString.Base64 as B64
-import qualified Data.ByteString.Base64.Lazy as BL64
-
 
 import Bytes.Utils (hexstringToBase64, stringToByteString, hexStringToByteString, byteStringToHexString)
 import Bytes.Xor (fixedXor, cycleKey)
@@ -26,7 +24,7 @@ import qualified Crypto.AES as AES
 import Utils.Elmify ((|>))
 
 
-challenge1 :: [Char] -> BL.ByteString
+challenge1 :: [Char] -> B.ByteString
 challenge1 =
   hexstringToBase64
 
@@ -57,9 +55,9 @@ challenge5 stringToCipher key =
   |> byteStringToHexString
 
 
-challenge6 :: BL.ByteString -> [(BL.ByteString, BL.ByteString)]
+challenge6 :: B.ByteString -> [(B.ByteString, B.ByteString)]
 challenge6 contents =
-  BL64.decodeLenient contents
+  B64.decodeLenient contents
   |> Key.search
 
 
@@ -67,6 +65,14 @@ challenge7 :: B.ByteString -> B.ByteString -> B.ByteString
 challenge7 key contents =
   B64.decodeLenient contents
   |> AES.decryptKey128 key
+
+challenge8 :: B.ByteString -> [[Char]] -> [B.ByteString]
+challenge8 key strings =
+  let
+    bytestrings =
+      map Bytes.Utils.hexStringToByteString strings
+  in
+    AES.detect key bytestrings
 
 
 challenge4 :: Match

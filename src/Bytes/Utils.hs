@@ -11,9 +11,9 @@ module Bytes.Utils
     , blocks
     ) where
 
-import qualified Data.ByteString.Base64.Lazy as B64
-import qualified Data.ByteString.Base16.Lazy as B16
-import qualified Data.ByteString.Lazy as B
+import qualified Data.ByteString.Base64 as B64
+import qualified Data.ByteString.Base16 as B16
+import qualified Data.ByteString as B
 
 import GHC.Base (unsafeChr)
 import Data.Char (ord)

@@ -1,11 +1,12 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Crypto.AES
-    ( cryptKey128
+    ( initAES128
+    , cryptKey128
     , decryptKey128
+    , detect
     ) where
 
-import qualified Data.ByteString.Lazy as BL
 import qualified Data.ByteString as B
 
 --import qualified Crypto.Cipher as C
@@ -35,20 +36,8 @@ decryptKey128 key msg = ecbDecrypt ctx msg
 cryptKey128 key msg = ecbEncrypt ctx msg
   where ctx = initAES128 key
 
-{-
-decryptECB :: BL.ByteString -> BL.ByteString -> BL.ByteString
-decryptECB bs k =
+detect key bytestrings =
   let
-    cipher =
-      BL.toStrict k
-      |> C.makeKey
+    ctx = initAES128 key
   in
-    case cipher of
-      Right key ->
-        BL.toStrict bs
-        |> C.ecbDecrypt key
-        |> (\b -> [b])
-        |> BL.fromChunks
-      Left e ->
-        BL.fromChunks [show e]
--}
+    map (ecbDecrypt ctx) bytestrings
