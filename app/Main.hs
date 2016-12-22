@@ -23,7 +23,7 @@ main = do
   s1ch6
   s1ch6b
   s1ch7
-  s1ch8
+  s1ch8b
 
 s1ch1 :: IO ()
 s1ch1 =
@@ -134,7 +134,7 @@ s1ch7 =
 s1ch8 ::IO ()
 s1ch8 =
   do
-    putStrLn "Set 1, challenge 7"
+    putStrLn "Set 1, challenge 8"
     fileContents <- readFile "./static/8.txt"
     mapM_ (putStrLn . showRes) $ S1.challenge8 "YELLOW SUBMARINE" $ lines fileContents
     putStrLn ""
@@ -142,3 +142,16 @@ s1ch8 =
     where
       showRes res =
         show (B.take 64 res)
+
+s1ch8b ::IO ()
+s1ch8b =
+  do
+    putStrLn "Set 1, challenge 8"
+    fileContents <- readFile "./static/8.txt"
+    mapM_ (putStrLn . showRes) $ S1.challenge8b 16 $ lines fileContents
+    putStrLn ""
+
+    where
+      showRes res =
+        show res
+        --(fst res) ++ " ; " ++ (snd res)

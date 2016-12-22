@@ -25,6 +25,7 @@ library
                      , Stats.Frequency
                      , Stats.Simple
                      , Stats.HammingDistance
+                     , Utils.Strings
                      , Utils.Elmify
   build-depends:       base >= 4.7 && < 5
                      , base16-bytestring

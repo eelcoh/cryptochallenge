@@ -9,6 +9,7 @@ module Set1.Challenges
     , challenge6
     , challenge7
     , challenge8
+    , challenge8b
     ) where
 
 import qualified Data.ByteString as B
@@ -20,6 +21,9 @@ import Bytes.Xor (fixedXor, cycleKey)
 import Crypto.Attempt (Match, attempt, bestMatch)
 import qualified Crypto.Key as Key
 import qualified Crypto.AES as AES
+import Utils.Strings (substrings, blocks)
+import Data.List (sortBy, tails, maximumBy)
+import Data.Function (on)
 
 import Utils.Elmify ((|>))
 
@@ -74,6 +78,20 @@ challenge8 key strings =
   in
     AES.detect key bytestrings
 
+challenge8b :: Int -> [[Char]] -> [([Char], [Char])]
+challenge8b ksz strings =
+  let
+    ss s =
+      blocks (ksz * 2) s
+      |> pairs
+      |> map (uncurry substrings)
+      |> maximumBy (compare `on` length)
+
+    pairs xs =
+      [(x1, x2) | (x1:xs1) <- tails xs, x2 <- xs1]
+  in
+    map (\s -> (ss s, s)) strings
+    |> sortBy (compare `on` (length . fst))
 
 challenge4 :: Match
 challenge4 =
