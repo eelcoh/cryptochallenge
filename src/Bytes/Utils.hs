@@ -43,25 +43,25 @@ w2c = unsafeChr . fromIntegral
 -- convert strings like "37f384" into a bytestring with that hexadecimal value
 hexStringToByteString :: [Char] -> B.ByteString
 hexStringToByteString str =
-  map c2w str
-  |> B.pack
-  |> B16.decode
-  |> fst
+  map c2w str     -- [Char] -> [Word8]
+  |> B.pack       -- [Word8] -> ByteString
+  |> B16.decode   -- from Hex (Base16) to (ByteString, ByteString) (snd is for characters failing the parsing)
+  |> fst          -- take the first from the tuple
 
   -- convert a bytestring with a hexadecimal value into a string
 byteStringToHexString :: B.ByteString -> [Char]
 byteStringToHexString bStr =
-  B16.encode bStr
-  |> B.unpack
-  |> map w2c
+  B16.encode bStr -- binary -> Base16
+  |> B.unpack     -- ByteString -> [Word8]
+  |> map w2c      -- [Word8] -> [Char]
 
 
 hexstringToBase64 :: [Char] -> B.ByteString
 hexstringToBase64 str =
-  hexStringToByteString str
-  |> B64.encode
+  hexStringToByteString str -- convert to ByteString first
+  |> B64.encode             -- encode Base64
 
--- chop into bytestrings of sz bytes
+-- utility to chop a ByteString into a list of bytestrings of sz bytes
 blocks :: Int -> B.ByteString -> [B.ByteString]
 blocks sz bs =
   B.unpack bs

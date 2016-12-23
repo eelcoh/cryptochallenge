@@ -31,21 +31,24 @@ import Utils.Elmify ((|>))
 
 challenge1 :: [Char] -> B.ByteString
 challenge1 =
-  hexstringToBase64
+  hexstringToBase64           -- see Bytes.Utils
 
 
 challenge2 :: [Char] -> [Char] -> [Char]
 challenge2 s1 s2 =
   let
+    -- convert both incoming strings into ByteStrings.
     bs1 =
       hexStringToByteString s1
     bs2 =
       hexStringToByteString s2
   in
-    fixedXor bs1 bs2
-    |> byteStringToHexString
+    fixedXor bs1 bs2            -- apply Bytes.Utils.fixedXor on them
+    |> byteStringToHexString   -- and then convert the result back into a hex string
 
-
+-- first convert the hexString into a ByteString
+-- then apply Crypto.Attempt.attempt on it
+-- Returns a (best) Match
 challenge3 :: [Char] -> Attempt.Match
 challenge3 =
   Attempt.attempt . hexStringToByteString
