@@ -19,7 +19,7 @@ solution =
 
 spec :: Spec
 spec = do
-  describe "Challenge5" $ do
+  describe "Challenge 8" $ do
     fileContents <- runIO (readFile "./static/8.txt")
     it "detects the string that was encrypted with AES ECB mode" $ do
       (snd $ S1.challenge8 16 $ lines fileContents) `shouldBe` solution

@@ -60,7 +60,7 @@ search bs =
     -- step 1, 2 an 3 happen in findKeyLength
     keyLengths =
       findKeyLength bs
-      |> take 1   -- We may have a keysize. To be sure we take the four best
+      |> take 2   -- We may have a keysize. To be sure we take the best
                   -- matching keysizes.
 
     -- for all candidate keylengths, determine the key according to step 4 to 8.
