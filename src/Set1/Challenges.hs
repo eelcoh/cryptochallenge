@@ -9,7 +9,6 @@ module Set1.Challenges
     , challenge6
     , challenge7
     , challenge8
-    , challenge8b
     ) where
 
 import qualified Data.ByteString as B
@@ -22,7 +21,7 @@ import qualified Crypto.Attempt as Attempt
 import qualified Crypto.Key as Key
 import qualified Crypto.AES as AES
 import Utils.Strings (substrings, blocks)
-import Data.List (sortBy, tails, maximumBy)
+import Data.List (sortBy, tails, minimumBy, maximumBy)
 import Data.Function (on)
 import Data.Ord (Ordering)
 
@@ -74,57 +73,11 @@ challenge7 key contents =
   B64.decodeLenient contents
   |> AES.decryptKey128 key
 
-challenge8 :: B.ByteString -> [[Char]] -> [B.ByteString]
+challenge8 :: Int -> [[Char]] -> (Int, [Char])
 challenge8 key strings =
-  let
-    bytestrings =
-      map Bytes.Utils.hexStringToByteString strings
-  in
-    AES.detect key bytestrings
+  map (AES.detect key) strings
+  |> minimumBy (compare `on` fst)
 
-challenge8b :: Int -> [[Char]] -> ([Char], [Char])
-challenge8b ksz strings =
-  let
-    {-
-      It starts with the ss function that
-      * takes the hexadecimal string, splits it into chunks of twice the keysize
-        (because it is not made into bytestring it is two characters per byte).
-
-      * It then calls the pairs functions on the result. This takes a list, and
-        returns a list of pairs, covering all possible combinations.
-
-      * Then it determines the substrings within the pairs, and takes the
-        largest substring out of it.
-
-      * Finally, it returns a tuple containing the substring and the original
-        string: (largest substring, original string)
-
-      The ss function is mapped onto the full list of strings. Then, of all the
-      results, the one with the largest substring is selected in the bestMatch
-      function.
-    -}
-    ss :: [Char] -> ([Char], [Char])
-    ss s =
-      blocks (ksz * 2) s
-      |> pairs
-      |> map (uncurry substrings)
-      |> maximumBy (compare `on` length)
-      |> (flip (,)) s
-
-    cmp :: ([Char], [Char]) -> ([Char], [Char]) -> Ordering
-    cmp =
-      compare `on` (length . fst)
-
-    pairs :: [[Char]] -> [([Char], [Char])]
-    pairs xs =
-      [(x1, x2) | (x1:xs1) <- tails xs, x2 <- xs1]
-
-    bestMatch :: [([Char], [Char])] -> ([Char], [Char])
-    bestMatch l =
-      maximumBy cmp l
-  in
-    map ss strings
-    |> bestMatch
 
 challenge4 :: Attempt.Match
 challenge4 =

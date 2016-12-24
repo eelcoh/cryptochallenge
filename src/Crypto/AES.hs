@@ -13,6 +13,11 @@ import qualified Data.ByteString as B
 import Crypto.Cipher.Types
 import Crypto.Cipher
 
+import Bytes.Utils as Bytes
+import Utils.List (pairs)
+
+import Stats.HammingDistance as Hamming
+
 import Utils.Elmify ((|>))
 
 -- the bytestring need to have a length of 16 bytes
@@ -36,8 +41,11 @@ decryptKey128 key msg = ecbDecrypt ctx msg
 cryptKey128 key msg = ecbEncrypt ctx msg
   where ctx = initAES128 key
 
-detect key bytestrings =
-  let
-    ctx = initAES128 key
-  in
-    map (ecbDecrypt ctx) bytestrings
+detect :: Int -> [Char] -> (Int, [Char])
+detect key hexString =
+  Bytes.hexStringToByteString hexString
+  |> Bytes.blocks key
+  |> pairs
+  |> map Hamming.bytestrings
+  |> minimum
+  |> ((flip (,)) hexString)

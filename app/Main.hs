@@ -21,9 +21,8 @@ main = do
   s1ch4
   s1ch5
   s1ch6
-  s1ch6b
   s1ch7
-  s1ch8b
+  s1ch8
 
 s1ch1 :: IO ()
 s1ch1 =
@@ -134,24 +133,15 @@ s1ch7 =
 s1ch8 ::IO ()
 s1ch8 =
   do
-    putStrLn "Set 1, challenge 8"
+    putStrLn "Set 1, challenge 8 "
+    putStrLn "Shows a tuple consisting of "
+    putStrLn " * the minimum hamming distance of any set of blocks with keysize 16"
+    putStrLn " * the string in which that was found"
     fileContents <- readFile "./static/8.txt"
-    mapM_ (putStrLn . showRes) $ S1.challenge8 "YELLOW SUBMARINE" $ lines fileContents
-    putStrLn ""
-
-    where
-      showRes res =
-        show (B.take 64 res)
-
-s1ch8b ::IO ()
-s1ch8b =
-  do
-    putStrLn "Set 1, challenge 8"
-    fileContents <- readFile "./static/8.txt"
-    mapM_ (putStrLn . showRes) $ S1.challenge8b 16 $ lines fileContents
+    putStrLn $ showRes $ S1.challenge8 16 $ lines fileContents
     putStrLn ""
 
     where
       showRes res =
         show res
-        --(fst res) ++ " ; " ++ (snd res)
+        --show (B.take 64 res)
