@@ -28,4 +28,4 @@ spec :: Spec
 spec = do
   describe "Challenge5" $ do
     it "encrypts the inputstring with a cycled \"ICE\"" $ do
-      S1.challenge5 cipher stringToCipher `shouldBe` solution
+      S1.challenge5 stringToCipher cipher  `shouldBe` solution

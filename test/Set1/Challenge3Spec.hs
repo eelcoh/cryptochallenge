@@ -9,7 +9,7 @@ import Control.Exception (evaluate)
 
 import qualified Set1.Challenges as S1
 import qualified Crypto.Attempt as Attempt
-
+import qualified Bytes.Utils as Bytes
 
 main :: IO ()
 main = hspec spec
@@ -22,6 +22,6 @@ spec :: Spec
 spec = do
   describe "Challenge" $ do
     it "should be crypted with an X" $ do
-      (Attempt.char $ S1.challenge3 input) `shouldBe` 'X'
+      (Bytes.w2c $ Attempt.char $ S1.challenge3 input) `shouldBe` 'X'
     it "should read \"Cooking MC's like a pound of bacon\"" $ do
       (Attempt.string $ S1.challenge3 input) `shouldBe` "Cooking MC's like a pound of bacon"

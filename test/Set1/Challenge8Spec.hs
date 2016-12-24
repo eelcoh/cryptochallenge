@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Set1.Challenge5Spec
+module Set1.Challenge8Spec
     ( spec
     ) where
 
@@ -20,6 +20,6 @@ solution =
 spec :: Spec
 spec = do
   describe "Challenge5" $ do
-    fileContents <- readFile "./static/8.txt"
+    fileContents <- runIO (readFile "./static/8.txt")
     it "detects the string that was encrypted with AES ECB mode" $ do
-      (snd $ S1.challenge8 16 fileContents) `shouldBe` solution
+      (snd $ S1.challenge8 16 $ lines fileContents) `shouldBe` solution

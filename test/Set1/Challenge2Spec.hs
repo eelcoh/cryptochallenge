@@ -28,6 +28,6 @@ solution =
 
 spec :: Spec
 spec = do
-  describe "Challenge1" $ do
+  describe "Challenge2" $ do
     it "returns a base64 encoded string" $ do
       S1.challenge2 input xor `shouldBe` solution
