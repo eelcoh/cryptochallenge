@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Set1.Challenges
+module Challenges.Set1
     ( challenge1
     , challenge2
     , challenge3

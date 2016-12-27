@@ -9,6 +9,7 @@ module Bytes.Utils
     , c2w
     , w2c
     , blocks
+    , pad
     ) where
 
 import qualified Data.ByteString.Base64 as B64
@@ -67,3 +68,18 @@ blocks sz bs =
   B.unpack bs
   |> Split.chunksOf (fromIntegral sz)
   |> map B.pack
+
+pad :: Int -> B.ByteString -> B.ByteString
+pad blksz key =
+  let
+    padByte =
+      0x04::Word8
+
+    keysz =
+      B.length key
+
+    padding =
+      B.replicate blksz padByte
+      |> B.drop keysz
+  in
+    B.append key padding

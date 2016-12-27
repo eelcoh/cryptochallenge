@@ -8,7 +8,7 @@ import Test.QuickCheck
 import Control.Exception (evaluate)
 
 import qualified Data.ByteString as B
-import qualified Set1.Challenges as S1
+import qualified Challenges.Set1 as S1
 
 
 main :: IO ()

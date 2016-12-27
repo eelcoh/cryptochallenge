@@ -7,7 +7,7 @@ import Test.Hspec
 import Test.QuickCheck
 import Control.Exception (evaluate)
 
-import qualified Set1.Challenges as S1
+import qualified Challenges.Set1 as S1
 import qualified Crypto.Attempt as Attempt
 
 

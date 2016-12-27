@@ -2,7 +2,8 @@
 
 module Main where
 
-import Set1.Challenges as S1
+import Challenges.Set1 as S1
+import Challenges.Set2 as S2
 
 import Utils.Elmify ((|>))
 import qualified Stats.Frequency as Frequency
@@ -23,6 +24,7 @@ main = do
   s1ch6
   s1ch7
   s1ch8
+  s2ch10
 
 s1ch1 :: IO ()
 s1ch1 =
@@ -145,3 +147,18 @@ s1ch8 =
       showRes res =
         show res
         --show (B.take 64 res)
+
+s2ch10 ::IO ()
+s2ch10 =
+  do
+    putStrLn "Set 2, challenge 10 "
+    fileContents <- B.readFile "./static/10.txt"
+    putStrLn $ showRes $ S2.challenge10 key fileContents
+    putStrLn ""
+
+    where
+      key =
+        "YELLOW SUBMARINE"::B.ByteString
+      showRes res =
+        --show res
+        show (B.take 64 res)
