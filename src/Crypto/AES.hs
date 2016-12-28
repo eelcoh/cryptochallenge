@@ -7,6 +7,8 @@ module Crypto.AES
     , detect
     , cbcEncrypt
     , cbcDecrypt
+    , encryption_oracle
+    , encryption_oracles
     ) where
 
 import qualified Data.ByteString as B
@@ -14,9 +16,13 @@ import qualified Data.ByteString as B
 -- import qualified Crypto.Cipher.Types as CT
 import qualified Crypto.Cipher as C
 
+import System.Random
+
 import Bytes.Utils as Bytes
 import Bytes.Xor as Xor
 import Utils.List (pairs)
+import Data.List (last)
+import Data.Word (Word8)
 
 import Stats.HammingDistance as Hamming
 
@@ -32,6 +38,8 @@ initAES128 = either (error . show) C.cipherInit . C.makeKey
 initAES256 :: B.ByteString -> C.AES256
 initAES256 = either (error . show) C.cipherInit . C.makeKey
 
+
+-- ECB
 -- real code would not create a new context every time, but
 -- initialize once, and reuse the context.
 cryptKey256 key msg = C.ecbEncrypt ctx msg
@@ -43,6 +51,75 @@ decryptKey128 key msg = C.ecbDecrypt ctx msg
 cryptKey128 key msg = C.ecbEncrypt ctx msg
   where ctx = initAES128 key
 
+getRandoms :: StdGen -> Int -> (B.ByteString, StdGen)
+getRandoms g keysz =
+  let
+    createRandoms =
+      iterate (\rg -> random (snd rg) :: (Word8, StdGen))
+
+    toByteString rgs =
+      map fst rgs
+      |> B.pack
+      |> (flip (,)) (last rgs |> snd)
+
+  in
+    createRandoms (0x00, g)
+    |> take keysz
+    |> toByteString
+
+
+encryption_oracles :: StdGen -> Int -> B.ByteString -> [B.ByteString]
+encryption_oracles g num stringToCipher =
+  let
+    oracle f =
+      iterate (\rg -> (f (snd rg))) (stringToCipher, g)
+    encr =
+      (flip encryption_oracle) stringToCipher
+  in
+    oracle encr
+    |> take num
+    |> map fst
+
+
+encryption_oracle :: StdGen -> B.ByteString -> (B.ByteString, StdGen)
+encryption_oracle g0 str =
+  let
+    keysz =
+      16
+
+    (key, g1) =
+      getRandoms g0 keysz
+
+    (numBefore, g2) =
+      randomR (5, 10) g1
+
+    (numAfter, g3) =
+      randomR (5, 10) g2
+
+    (padBefore, g4) =
+      getRandoms g3 numBefore
+
+    (padAfter, g5) =
+      getRandoms g4 numAfter
+
+    (iv, g6) =
+      getRandoms g5 keysz
+
+    (chooseCbc, g7) =
+      random g6 :: (Bool, StdGen)
+
+    stringToCipher =
+      B.concat [padBefore, str, padAfter]
+
+  in
+    if chooseCbc
+      then
+        (cbcEncrypt key iv stringToCipher, g7)
+      else
+        (ecbEncrypt key stringToCipher, g7)
+
+
+
 detect :: Int -> [Char] -> (Int, [Char])
 detect key hexString =
   Bytes.hexStringToByteString hexString
@@ -53,14 +130,27 @@ detect key hexString =
   |> ((flip (,)) hexString)
 
 
-cbcEncrypt :: B.ByteString -> B.ByteString -> B.ByteString
-cbcEncrypt key stringToCipher =
+
+ecbEncrypt :: B.ByteString -> B.ByteString -> B.ByteString
+ecbEncrypt key stringToCipher =
   let
+    ctx =
+      initAES128 key
+
     keysz =
       B.length key
 
-    iv =
-      B.replicate keysz 0x00
+  in
+    Bytes.blocks keysz stringToCipher
+    |> map ((C.ecbDecrypt ctx) . (Bytes.pad keysz))
+    |> B.concat
+
+-- https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#CBC
+cbcEncrypt :: B.ByteString -> B.ByteString -> B.ByteString -> B.ByteString
+cbcEncrypt key iv stringToCipher =
+  let
+    keysz =
+      B.length key
 
     ctx =
       initAES128 key
@@ -94,8 +184,8 @@ cbc ctx iv blocksToCipher =
       in
         firstBlock:nextBlocks
 
-cbcDecrypt :: B.ByteString -> B.ByteString -> B.ByteString
-cbcDecrypt key stringToDecipher =
+cbcDecrypt :: B.ByteString -> B.ByteString -> B.ByteString -> B.ByteString
+cbcDecrypt key iv stringToDecipher =
   let
     keysz =
       B.length key
@@ -108,9 +198,6 @@ cbcDecrypt key stringToDecipher =
 
     blocksDecipherd =
       map (C.ecbDecrypt ctx) blocksToDecipher
-
-    iv =
-      B.replicate keysz 0x00
 
     blocksToXor =
       (iv, (head blocksDecipherd)) : (zip blocksToDecipher (tail blocksDecipherd))

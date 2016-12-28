@@ -12,19 +12,22 @@ import qualified Stats.Frequency as Frequency
 import qualified Data.ByteString as B
 import Text.Printf
 import Prelude
+import System.Random (getStdGen)
 
 
 main :: IO ()
 main = do
-  s1ch1
-  s1ch2
-  s1ch3
-  s1ch4
-  s1ch5
-  s1ch6
-  s1ch7
-  s1ch8
-  s2ch10
+  --s1ch1
+  --s1ch2
+  --s1ch3
+  --s1ch4
+  --s1ch5
+  --s1ch6
+  --s1ch7
+  --s1ch8
+  --s2ch10
+  s2ch11
+
 
 s1ch1 :: IO ()
 s1ch1 =
@@ -157,3 +160,23 @@ s2ch10 =
       showRes res =
         --show res
         show (B.take 64 res)
+
+s2ch11::IO ()
+s2ch11 =
+  do
+    putStrLn "Set 2, challenge 11 "
+    fileContents <- B.readFile "./static/11.txt"
+    generator <- getStdGen
+    mapM_ (putStrLn . showRes) $ S2.challenge11 generator fileContents
+    putStrLn ""
+
+    where
+      showRes res =
+        B.concat [(firstBytes res), "  |  ", (lastBytes res)]
+        |> show
+
+      firstBytes x =
+        B.take 24 x
+
+      lastBytes x =
+        B.drop ((B.length x) - 24) x

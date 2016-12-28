@@ -39,6 +39,7 @@ library
                      , split
                      , cryptocipher
                      , crypto-cipher-types
+                     , random
   default-language:    Haskell2010
 
 executable cryptochallenge-exe
@@ -49,6 +50,7 @@ executable cryptochallenge-exe
                      , cryptochallenge
                      , text
                      , bytestring
+                     , random
   default-language:    Haskell2010
 
 test-suite cryptochallenge-test
