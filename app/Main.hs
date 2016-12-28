@@ -73,16 +73,11 @@ s1ch3 =
 
 s1ch4 :: IO ()
 s1ch4 =
-  showRes res
-  where
-    res =
-      S1.challenge4
-
-    showRes c =
-      do
-        putStrLn "Set 1, challenge 4"
-        putStrLn $ show c
-        putStrLn ""
+  do
+    putStrLn "Set 1, challenge 4"
+    fileContents <- readFile "./static/4.txt"
+    putStrLn $ show $ S1.challenge4 $ lines fileContents
+    putStrLn ""
 
 s1ch5 :: IO ()
 s1ch5 =
