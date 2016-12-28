@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module Set1.Challenge7Spec
+module Set1.Challenge07Spec
     ( spec
     ) where
 
