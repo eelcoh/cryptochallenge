@@ -32,6 +32,7 @@ challenge10 key stringToCipher =
   in
     AES.cbcEncrypt key iv s -- see Crypto.AES
 
-challenge11 :: StdGen -> B.ByteString -> [B.ByteString]
+challenge11 :: StdGen -> B.ByteString -> [(AES.Mode, B.ByteString)]
 challenge11 g stringToCipher =
-  AES.encryption_oracles g 10 stringToCipher
+  AES.encryption_oracles g 20 stringToCipher
+  |> map (\b -> ((AES.detect_oracle 16 b), b))

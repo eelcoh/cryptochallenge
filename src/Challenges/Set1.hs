@@ -14,7 +14,7 @@ module Challenges.Set1
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Base64 as B64
 
-import Bytes.Utils (hexstringToBase64, stringToByteString, hexStringToByteString, byteStringToHexString)
+import Bytes.Utils (hexstringToBase64, stringToByteString, hexStringToByteString, hexStringToByteString, byteStringToHexString)
 import Bytes.Xor (fixedXor, cycleKey)
 
 import qualified Crypto.Attempt as Attempt
@@ -78,7 +78,7 @@ challenge7 key contents =
   |> AES.decryptKey128 key
 
 
-challenge8 :: Int -> [[Char]] -> (Int, [Char])
+challenge8 :: Int -> [[Char]] -> (Int, B.ByteString)
 challenge8 key strings =
-  map (AES.detect key) strings
+  map ((AES.detect key) . hexStringToByteString) strings
   |> minimumBy (compare `on` fst)

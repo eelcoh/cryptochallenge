@@ -13,6 +13,7 @@ import qualified Data.ByteString as B
 import Text.Printf
 import Prelude
 import System.Random (getStdGen)
+import Bytes.Utils (stringToByteString)
 
 
 main :: IO ()
@@ -171,8 +172,9 @@ s2ch11 =
     putStrLn ""
 
     where
-      showRes res =
-        B.concat [(firstBytes res), "  |  ", (lastBytes res)]
+      showRes (i, res) =
+        -- B.concat [(toBs i), " : ", (l res), " - ", (firstBytes res), "  |  ", (lastBytes res)]
+        B.concat [(toBs i), " : ", (l res), " - ", (firstBytes res), "[...]"]
         |> show
 
       firstBytes x =
@@ -180,3 +182,11 @@ s2ch11 =
 
       lastBytes x =
         B.drop ((B.length x) - 24) x
+
+      l x =
+        B.length x
+        |> show
+        |> stringToByteString
+
+      toBs =
+        stringToByteString . show

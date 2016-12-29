@@ -5,10 +5,12 @@ module Crypto.AES
     , cryptKey128
     , decryptKey128
     , detect
+    , detect_oracle
     , cbcEncrypt
     , cbcDecrypt
     , encryption_oracle
     , encryption_oracles
+    , Mode
     ) where
 
 import qualified Data.ByteString as B
@@ -27,6 +29,17 @@ import Data.Word (Word8)
 import Stats.HammingDistance as Hamming
 
 import Utils.Elmify ((|>))
+
+data Mode
+  = EBC
+  | CBC
+  deriving (Show, Enum, Bounded)
+
+instance Random Mode where
+  randomR (a, b) g =
+    case randomR (fromEnum a, fromEnum b) g of
+      (x, g') -> (toEnum x, g')
+  random g = randomR (minBound, maxBound) g
 
 -- the bytestring need to have a length of 16 bytes
 -- otherwise the simplified error handling will raise an exception.
@@ -79,6 +92,7 @@ encryption_oracles g num stringToCipher =
     oracle encr
     |> take num
     |> map fst
+    |> tail
 
 
 encryption_oracle :: StdGen -> B.ByteString -> (B.ByteString, StdGen)
@@ -105,29 +119,39 @@ encryption_oracle g0 str =
     (iv, g6) =
       getRandoms g5 keysz
 
-    (chooseCbc, g7) =
-      random g6 :: (Bool, StdGen)
+    (mode, g7) =
+      random g6 :: (Mode, StdGen)
 
     stringToCipher =
       B.concat [padBefore, str, padAfter]
 
   in
-    if chooseCbc
-      then
+    case mode of
+      CBC ->
         (cbcEncrypt key iv stringToCipher, g7)
-      else
+      EBC ->
         (ecbEncrypt key stringToCipher, g7)
 
 
+detect_oracle :: Int -> B.ByteString -> Mode
+detect_oracle keysz str =
+  let
+    (dst, _) =
+      detect keysz str
+  in
+    if dst == 0
+      then
+        EBC
+      else
+        CBC
 
-detect :: Int -> [Char] -> (Int, [Char])
-detect key hexString =
-  Bytes.hexStringToByteString hexString
-  |> Bytes.blocks key
+detect :: Int -> B.ByteString -> (Int, B.ByteString)
+detect key str =
+  Bytes.blocks key str
   |> pairs
   |> map Hamming.bytestrings
   |> minimum
-  |> ((flip (,)) hexString)
+  |> ((flip (,)) str)
 
 
 
