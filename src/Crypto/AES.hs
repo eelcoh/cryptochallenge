@@ -21,11 +21,11 @@ import qualified Data.ByteString as B
 
 -- import qualified Crypto.Cipher.Types as CT
 import qualified Crypto.Cipher as C
+import qualified Crypto.Xor as Xor
 
 import System.Random
 
 import Utils.Bytes as Bytes
-import Crypto.Xor as Xor
 import Utils.List (pairs)
 import Data.List (last)
 import Data.Word (Word8)

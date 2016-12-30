@@ -17,8 +17,7 @@ import qualified Data.ByteString.Base64 as B64
 import Utils.Bytes (hexstringToBase64, stringToByteString, hexStringToByteString, hexStringToByteString, byteStringToHexString)
 import Crypto.Xor (fixedXor, cycleKey)
 
-import qualified Crypto.Attempt as Attempt
-import qualified Crypto.Key as Key
+import qualified Crypto.Xor as Xor
 import qualified Crypto.AES as AES
 import Utils.Strings (substrings, blocks)
 import Data.List (sortBy, tails, minimumBy, maximumBy)
@@ -47,17 +46,17 @@ challenge2 s1 s2 =
 
 
 -- first convert the hexString into a ByteString
--- then apply Crypto.Attempt.attempt on it
+-- then apply Crypto.Xor.attempt on it
 -- Returns a (best) Match
-challenge3 :: [Char] -> Attempt.Match
+challenge3 :: [Char] -> Xor.Match
 challenge3 =
-  Attempt.attempt . hexStringToByteString
+  Xor.attempt . hexStringToByteString
 
 
-challenge4 :: [[Char]] -> Attempt.Match
+challenge4 :: [[Char]] -> Xor.Match
 challenge4 strings =
   map challenge3 strings
-  |> Attempt.bestMatch
+  |> Xor.bestMatch
 
 
 challenge5 :: [Char] -> [Char] -> [Char]
@@ -69,7 +68,7 @@ challenge5 stringToCipher key =
 challenge6 :: B.ByteString -> [(B.ByteString, B.ByteString)]
 challenge6 contents =
   B64.decodeLenient contents
-  |> Key.search
+  |> Xor.search
 
 
 challenge7 :: B.ByteString -> B.ByteString -> B.ByteString

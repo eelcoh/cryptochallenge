@@ -8,7 +8,7 @@ import Test.QuickCheck
 import Control.Exception (evaluate)
 
 import qualified Challenges.Set1 as S1
-import qualified Crypto.Attempt as Attempt
+import qualified Crypto.Xor as Xor
 import qualified Utils.Bytes as Bytes
 
 main :: IO ()
@@ -22,6 +22,6 @@ spec :: Spec
 spec = do
   describe "Challenge" $ do
     it "should be crypted with an X" $ do
-      (Bytes.w2c $ Attempt.char $ S1.challenge3 input) `shouldBe` 'X'
+      (Bytes.w2c $ Xor.char $ S1.challenge3 input) `shouldBe` 'X'
     it "should read \"Cooking MC's like a pound of bacon\"" $ do
-      (Attempt.string $ S1.challenge3 input) `shouldBe` "Cooking MC's like a pound of bacon"
+      (Xor.string $ S1.challenge3 input) `shouldBe` "Cooking MC's like a pound of bacon"
