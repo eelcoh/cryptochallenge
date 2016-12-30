@@ -25,7 +25,7 @@ import qualified Crypto.Cipher as C
 import System.Random
 
 import Utils.Bytes as Bytes
-import Bytes.Xor as Xor
+import Crypto.Xor as Xor
 import Utils.List (pairs)
 import Data.List (last)
 import Data.Word (Word8)

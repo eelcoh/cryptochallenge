@@ -1,4 +1,4 @@
-module Bytes.Xor
+module Crypto.Xor
   ( fixedXor
   , cycleKey
   , cycleKeyChar

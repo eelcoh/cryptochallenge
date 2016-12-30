@@ -13,7 +13,7 @@ import qualified Crypto.Attempt as Attempt
 import qualified Stats.HammingDistance as Hamming
 
 import qualified Utils.Bytes as Bytes
-import qualified Bytes.Xor as Xor
+import qualified Crypto.Xor as Xor
 import Utils.Elmify ((|>))
 
 

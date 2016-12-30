@@ -15,7 +15,7 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Base64 as B64
 
 import Utils.Bytes (hexstringToBase64, stringToByteString, hexStringToByteString, hexStringToByteString, byteStringToHexString)
-import Bytes.Xor (fixedXor, cycleKey)
+import Crypto.Xor (fixedXor, cycleKey)
 
 import qualified Crypto.Attempt as Attempt
 import qualified Crypto.Key as Key

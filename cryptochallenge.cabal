@@ -17,7 +17,7 @@ library
   hs-source-dirs:      src
   exposed-modules:     Challenges.Set1
                      , Challenges.Set2
-                     , Bytes.Xor
+                     , Crypto.Xor
                      , Crypto.Attempt
                      , Crypto.Key
                      , Crypto.AES
