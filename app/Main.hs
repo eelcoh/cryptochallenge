@@ -28,6 +28,7 @@ main = do
   --s1ch8
   --s2ch10
   s2ch11
+  s2ch12
 
 
 s1ch1 :: IO ()
@@ -190,3 +191,12 @@ s2ch11 =
 
       toBs =
         stringToByteString . show
+
+s2ch12::IO ()
+s2ch12 =
+  do
+    putStrLn "Set 2, challenge 12 "
+    generator <- getStdGen
+    -- mapM_ (putStrLn . show) $ S2.challenge12 generator
+    (putStrLn . show) $ S2.challenge12 generator
+    putStrLn ""

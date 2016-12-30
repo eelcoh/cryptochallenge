@@ -10,6 +10,7 @@ module Bytes.Utils
     , w2c
     , blocks
     , pad
+    , all_chars
     ) where
 
 import qualified Data.ByteString.Base64 as B64
@@ -21,6 +22,8 @@ import Data.Char (ord)
 import Data.Word (Word8)
 import Data.Function
 import qualified Data.List.Split as Split
+import qualified Data.List as List
+import qualified Data.Char as Ch
 
 import Utils.Elmify ((|>))
 
@@ -83,3 +86,9 @@ pad blksz key =
       |> B.drop keysz
   in
     B.append key padding
+
+all_chars :: [Word8]
+all_chars =
+  [1..255]
+  |> List.map Ch.chr -- [\001 .. \255]
+  |> List.map c2w

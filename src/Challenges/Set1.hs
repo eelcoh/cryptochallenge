@@ -75,7 +75,7 @@ challenge6 contents =
 challenge7 :: B.ByteString -> B.ByteString -> B.ByteString
 challenge7 key contents =
   B64.decodeLenient contents
-  |> AES.decryptKey128 key
+  |> AES.decrypt_key_128 key
 
 
 challenge8 :: Int -> [[Char]] -> (Int, B.ByteString)

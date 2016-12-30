@@ -1,16 +1,20 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Crypto.AES
-    ( initAES128
-    , cryptKey128
-    , decryptKey128
+    ( init_AES_128
+    , crypt_key_128
+    , decrypt_key_128
+    , detect_ecb_key_size
     , detect
-    , detect_oracle
-    , cbcEncrypt
-    , cbcDecrypt
+    , detect_AES_mode
+    , cbc_encrypt
+    , cbc_decrypt
+    , ecb_encrypt
     , encryption_oracle
     , encryption_oracles
     , Mode
+    , make_key
+    , make_buffers
     ) where
 
 import qualified Data.ByteString as B
@@ -43,8 +47,8 @@ instance Random Mode where
 
 -- the bytestring need to have a length of 16 bytes
 -- otherwise the simplified error handling will raise an exception.
-initAES128 :: B.ByteString -> C.AES128
-initAES128 = either (error . show) C.cipherInit . C.makeKey
+init_AES_128 :: B.ByteString -> C.AES128
+init_AES_128 = either (error . show) C.cipherInit . C.makeKey
 
 -- the bytestring need to have a length of 32 bytes
 -- otherwise the simplified error handling will raise an exception.
@@ -58,36 +62,36 @@ initAES256 = either (error . show) C.cipherInit . C.makeKey
 cryptKey256 key msg = C.ecbEncrypt ctx msg
   where ctx = initAES256 key
 
-decryptKey128 key msg = C.ecbDecrypt ctx msg
-  where ctx = initAES128 key
+decrypt_key_128 key msg = C.ecbDecrypt ctx msg
+  where ctx = init_AES_128 key
 
-cryptKey128 key msg = C.ecbEncrypt ctx msg
-  where ctx = initAES128 key
+crypt_key_128 key msg = C.ecbEncrypt ctx msg
+  where ctx = init_AES_128 key
 
-getRandoms :: StdGen -> Int -> (B.ByteString, StdGen)
-getRandoms g keysz =
+get_randoms :: StdGen -> Int -> (B.ByteString, StdGen)
+get_randoms g keysz =
   let
-    createRandoms =
+    create_randoms =
       iterate (\rg -> random (snd rg) :: (Word8, StdGen))
 
-    toByteString rgs =
+    to_byte_string rgs =
       map fst rgs
       |> B.pack
       |> (flip (,)) (last rgs |> snd)
 
   in
-    createRandoms (0x00, g)
+    create_randoms (0x00, g)
     |> take keysz
-    |> toByteString
+    |> to_byte_string
 
 
 encryption_oracles :: StdGen -> Int -> B.ByteString -> [B.ByteString]
-encryption_oracles g num stringToCipher =
+encryption_oracles g num string_to_cipher =
   let
     oracle f =
-      iterate (\rg -> (f (snd rg))) (stringToCipher, g)
+      iterate (\rg -> (f (snd rg))) (string_to_cipher, g)
     encr =
-      (flip encryption_oracle) stringToCipher
+      (flip encryption_oracle) string_to_cipher
   in
     oracle encr
     |> take num
@@ -102,7 +106,7 @@ encryption_oracle g0 str =
       16
 
     (key, g1) =
-      getRandoms g0 keysz
+      get_randoms g0 keysz
 
     (numBefore, g2) =
       randomR (5, 10) g1
@@ -110,31 +114,95 @@ encryption_oracle g0 str =
     (numAfter, g3) =
       randomR (5, 10) g2
 
-    (padBefore, g4) =
-      getRandoms g3 numBefore
+    (pad_before, g4) =
+      get_randoms g3 numBefore
 
-    (padAfter, g5) =
-      getRandoms g4 numAfter
+    (pad_after, g5) =
+      get_randoms g4 numAfter
 
     (iv, g6) =
-      getRandoms g5 keysz
+      get_randoms g5 keysz
 
     (mode, g7) =
       random g6 :: (Mode, StdGen)
 
-    stringToCipher =
-      B.concat [padBefore, str, padAfter]
+    string_to_cipher =
+      B.concat [pad_before, str, pad_after]
 
   in
     case mode of
       CBC ->
-        (cbcEncrypt key iv stringToCipher, g7)
+        (cbc_encrypt key iv string_to_cipher, g7)
       EBC ->
-        (ecbEncrypt key stringToCipher, g7)
+        (ecb_encrypt key string_to_cipher, g7)
+
+{-
+decrypt_buffer :: B.ByteString -> B.ByteString -> (B.ByteString, StdGen)
+decrypt_buffer key buffer =
+  let
+    string_to_cipher =
+      B.append buffer pad_after
+
+  in
+    ecb_encrypt key string_to_cipher
+-}
+
+make_key :: StdGen -> B.ByteString
+make_key g =
+  let
+    keysz =
+      16
+    (key, _) =
+      get_randoms g keysz
+  in
+    key
 
 
-detect_oracle :: Int -> B.ByteString -> Mode
-detect_oracle keysz str =
+make_buffers :: B.ByteString -> B.ByteString -> [B.ByteString]
+make_buffers key buffer =
+  let
+    max_size =
+      64
+    max_string =
+      B.replicate (2 * max_size + 1) 0x41 -- 0x41 is 'A'
+  in
+    B.inits max_string
+    |> map (\b -> B.append b buffer)
+    |> map (ecb_encrypt key)
+
+{-
+find_key_size :: [B.ByteString] -> Int
+find_key_size key buffer =
+
+    |> map (\(b1, b2) -> ((B.length b1), (detect (B.length b1) b2))
+    |> filter (\(_, (dst, _)) -> dst == 0)
+    |> maximumBy (compare `on` fst)
+    |> fst
+
+-}
+
+
+
+
+
+
+{-
+encrypt_buffer :: B.ByteString -> B.ByteString -> (B.ByteString, StdGen)
+encrypt_buffer key buffer =
+  let
+    pad_after =
+      "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"
+      |> B64.decode
+
+    string_to_cipher =
+      B.append buffer pad_after
+
+  in
+    ecb_encrypt key string_to_cipher
+-}
+
+detect_AES_mode :: Int -> B.ByteString -> Mode
+detect_AES_mode keysz str =
   let
     (dst, _) =
       detect keysz str
@@ -145,6 +213,33 @@ detect_oracle keysz str =
       else
         CBC
 
+detect_ecb_key_size :: Int -> B.ByteString -> Maybe Int
+detect_ecb_key_size keysz buffer =
+  let
+    is_found (i, bs) =
+      i == 0
+  
+    max_key_size =
+      128
+  in
+    if keysz > max_key_size
+      then
+        Nothing
+      else
+        case (detect_ecb_key_size (keysz * 2) buffer) of
+
+          Just s ->
+            Just s
+
+          Nothing ->
+            if (detect keysz buffer |> is_found)     -- UNSAFE (but it works in this example with max_key_size of 128)
+              then
+                Just keysz
+              else
+                Nothing
+
+
+
 detect :: Int -> B.ByteString -> (Int, B.ByteString)
 detect key str =
   Bytes.blocks key str
@@ -154,78 +249,74 @@ detect key str =
   |> ((flip (,)) str)
 
 
-
-ecbEncrypt :: B.ByteString -> B.ByteString -> B.ByteString
-ecbEncrypt key stringToCipher =
+ecb_encrypt :: B.ByteString -> B.ByteString -> B.ByteString
+ecb_encrypt key string_to_cipher =
   let
     ctx =
-      initAES128 key
+      init_AES_128 key
 
     keysz =
       B.length key
 
   in
-    Bytes.blocks keysz stringToCipher
+    Bytes.blocks keysz string_to_cipher
     |> map ((C.ecbDecrypt ctx) . (Bytes.pad keysz))
     |> B.concat
 
 -- https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#CBC
-cbcEncrypt :: B.ByteString -> B.ByteString -> B.ByteString -> B.ByteString
-cbcEncrypt key iv stringToCipher =
+cbc_encrypt :: B.ByteString -> B.ByteString -> B.ByteString -> B.ByteString
+cbc_encrypt key iv string_to_cipher =
   let
     keysz =
       B.length key
 
     ctx =
-      initAES128 key
+      init_AES_128 key
 
-    blocksToCipher =
-      Bytes.blocks keysz stringToCipher
+    blocks_to_cipher =
+      Bytes.blocks keysz string_to_cipher
       |> map (Bytes.pad keysz)
 
-    lengthOK x =
-      B.length x == 16
-
   in
-    cbc ctx iv blocksToCipher
+    cbc ctx iv blocks_to_cipher
     |> B.concat
 
 
 cbc :: C.AES128 -> B.ByteString -> [B.ByteString] -> [B.ByteString]
-cbc ctx iv blocksToCipher =
-  case blocksToCipher of
+cbc ctx iv blocks_to_cipher =
+  case blocks_to_cipher of
     [] ->
       []
     (x:xs) ->
       let
-        firstBlock =
+        first_block =
           Xor.fixedXor iv x
           |> C.ecbEncrypt ctx
 
-        nextBlocks =
-          cbc ctx firstBlock xs
+        next_blocks =
+          cbc ctx first_block xs
 
       in
-        firstBlock:nextBlocks
+        first_block:next_blocks
 
-cbcDecrypt :: B.ByteString -> B.ByteString -> B.ByteString -> B.ByteString
-cbcDecrypt key iv stringToDecipher =
+cbc_decrypt :: B.ByteString -> B.ByteString -> B.ByteString -> B.ByteString
+cbc_decrypt key iv string_to_decipher =
   let
     keysz =
       B.length key
 
     ctx =
-      initAES128 key
+      init_AES_128 key
 
-    blocksToDecipher =
-      Bytes.blocks keysz stringToDecipher
+    blocks_to_decipher =
+      Bytes.blocks keysz string_to_decipher
 
-    blocksDecipherd =
-      map (C.ecbDecrypt ctx) blocksToDecipher
+    blocks_decipherd =
+      map (C.ecbDecrypt ctx) blocks_to_decipher
 
-    blocksToXor =
-      (iv, (head blocksDecipherd)) : (zip blocksToDecipher (tail blocksDecipherd))
+    blocks_to_xor =
+      (iv, (head blocks_decipherd)) : (zip blocks_to_decipher (tail blocks_decipherd))
 
   in
-    map (uncurry Xor.fixedXor) blocksToXor
+    map (uncurry Xor.fixedXor) blocks_to_xor
     |> B.concat
