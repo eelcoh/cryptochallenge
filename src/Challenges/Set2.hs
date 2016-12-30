@@ -14,7 +14,7 @@ import qualified Data.Map as Map
 import Data.Word (Word8)
 
 
-import qualified Bytes.Utils as Bytes
+import qualified Utils.Bytes as Bytes
 import qualified Crypto.AES as AES
 import System.Random (StdGen)
 
@@ -24,7 +24,7 @@ import Utils.Elmify ((|>))
 challenge9 :: Int -> [Char] -> B.ByteString
 challenge9 blocksize key =
   Bytes.stringToByteString key
-  |> Bytes.pad blocksize       -- see Bytes.Utils
+  |> Bytes.pad blocksize       -- see Utils.Bytes
 
 challenge10 :: B.ByteString -> B.ByteString -> B.ByteString
 challenge10 key string_to_cipher =

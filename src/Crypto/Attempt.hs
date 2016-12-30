@@ -11,7 +11,7 @@ module Crypto.Attempt
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Base16.Lazy as B16
 
-import qualified Bytes.Utils as Bytes
+import qualified Utils.Bytes as Bytes
 import qualified Bytes.Xor as Xor
 import qualified Stats.Chi as Chi
 import qualified Stats.Simple as Simple

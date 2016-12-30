@@ -5,7 +5,7 @@ module Stats.HammingDistance
 
 import qualified Data.ByteString as B
 import Data.Word (Word8)
-import Bytes.Utils (c2w)
+import Utils.Bytes (c2w)
 import Utils.Elmify ((|>))
 import qualified Data.Bits as BB
 

@@ -13,7 +13,7 @@ import qualified Data.ByteString as B
 import Text.Printf
 import Prelude
 import System.Random (getStdGen)
-import Bytes.Utils (stringToByteString)
+import Utils.Bytes (stringToByteString)
 
 
 main :: IO ()

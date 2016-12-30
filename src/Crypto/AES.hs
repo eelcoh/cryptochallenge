@@ -24,7 +24,7 @@ import qualified Crypto.Cipher as C
 
 import System.Random
 
-import Bytes.Utils as Bytes
+import Utils.Bytes as Bytes
 import Bytes.Xor as Xor
 import Utils.List (pairs)
 import Data.List (last)
@@ -218,7 +218,7 @@ detect_ecb_key_size keysz buffer =
   let
     is_found (i, bs) =
       i == 0
-  
+
     max_key_size =
       128
   in

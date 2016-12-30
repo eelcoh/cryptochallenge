@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Bytes.Utils
+module Utils.Bytes
     ( stringToByteString
     , byteStringToString
     , hexStringToByteString
@@ -89,6 +89,4 @@ pad blksz key =
 
 all_chars :: [Word8]
 all_chars =
-  [1..255]
-  |> List.map Ch.chr -- [\001 .. \255]
-  |> List.map c2w
+  [1..255]::[Word8]

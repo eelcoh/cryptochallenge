@@ -14,7 +14,7 @@ module Challenges.Set1
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Base64 as B64
 
-import Bytes.Utils (hexstringToBase64, stringToByteString, hexStringToByteString, hexStringToByteString, byteStringToHexString)
+import Utils.Bytes (hexstringToBase64, stringToByteString, hexStringToByteString, hexStringToByteString, byteStringToHexString)
 import Bytes.Xor (fixedXor, cycleKey)
 
 import qualified Crypto.Attempt as Attempt
@@ -30,7 +30,7 @@ import Utils.Elmify ((|>))
 
 challenge1 :: [Char] -> B.ByteString
 challenge1 =
-  hexstringToBase64           -- see Bytes.Utils
+  hexstringToBase64           -- see Utils.Bytes
 
 
 challenge2 :: [Char] -> [Char] -> [Char]
@@ -42,7 +42,7 @@ challenge2 s1 s2 =
     bs2 =
       hexStringToByteString s2
   in
-    fixedXor bs1 bs2            -- apply Bytes.Utils.fixedXor on them
+    fixedXor bs1 bs2            -- apply Utils.Bytes.fixedXor on them
     |> byteStringToHexString   -- and then convert the result back into a hex string
 
 

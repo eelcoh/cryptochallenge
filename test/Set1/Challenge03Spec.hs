@@ -9,7 +9,7 @@ import Control.Exception (evaluate)
 
 import qualified Challenges.Set1 as S1
 import qualified Crypto.Attempt as Attempt
-import qualified Bytes.Utils as Bytes
+import qualified Utils.Bytes as Bytes
 
 main :: IO ()
 main = hspec spec
