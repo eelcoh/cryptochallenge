@@ -29,7 +29,7 @@ main = do
   --s2ch10
   s2ch11
   s2ch12
-
+  s2ch13
 
 s1ch1 :: IO ()
 s1ch1 =
@@ -199,4 +199,12 @@ s2ch12 =
     generator <- getStdGen
     -- mapM_ (putStrLn . show) $ S2.challenge12 generator
     (putStrLn . show) $ S2.challenge12 generator
+    putStrLn ""
+
+s2ch13::IO ()
+s2ch13 =
+  do
+    putStrLn "Set 2, challenge 13 "
+    generator <- getStdGen
+    (putStrLn . show) $ S2.challenge13 generator "fool1@bar.com"
     putStrLn ""

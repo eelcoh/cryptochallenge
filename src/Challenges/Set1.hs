@@ -77,7 +77,12 @@ challenge7 key contents =
   |> AES.decrypt_key_128 key
 
 
-challenge8 :: Int -> [[Char]] -> (Int, B.ByteString)
+challenge8 :: Int -> [[Char]] -> (Int, [Char])
 challenge8 key strings =
-  map ((AES.detect key) . hexStringToByteString) strings
-  |> minimumBy (compare `on` fst)
+  let
+    dtct =
+      (AES.detect key) . hexStringToByteString
+  in
+    map (\s -> (dtct s, s)) strings
+    |> minimumBy (compare `on` (fst . fst))
+    |> \((dst, bs), hs) -> (dst, hs)

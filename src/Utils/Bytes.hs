@@ -10,6 +10,7 @@ module Utils.Bytes
     , w2c
     , blocks
     , pad
+    , unpad
     , all_chars
     ) where
 
@@ -72,20 +73,25 @@ blocks sz bs =
   |> Split.chunksOf (fromIntegral sz)
   |> map B.pack
 
+pad_byte :: Word8
+pad_byte =
+    0x04
+
 pad :: Int -> B.ByteString -> B.ByteString
 pad blksz key =
   let
-    padByte =
-      0x04::Word8
-
     keysz =
       B.length key
 
     padding =
-      B.replicate blksz padByte
+      B.replicate blksz pad_byte
       |> B.drop keysz
   in
     B.append key padding
+
+unpad :: B.ByteString -> B.ByteString
+unpad bs =
+  B.takeWhile (\c -> c /= pad_byte) bs
 
 all_chars :: [Word8]
 all_chars =

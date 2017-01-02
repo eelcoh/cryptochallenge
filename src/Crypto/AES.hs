@@ -10,6 +10,7 @@ module Crypto.AES
     , cbc_encrypt
     , cbc_decrypt
     , ecb_encrypt
+    , ecb_decrypt
     , encryption_oracle
     , encryption_oracles
     , Mode
@@ -26,9 +27,10 @@ import qualified Crypto.Xor as Xor
 import System.Random
 
 import Utils.Bytes as Bytes
-import Utils.List (pairs)
+import Utils.List (pairs, safe_minimum)
 import Data.List (last)
 import Data.Word (Word8)
+import Data.Maybe (isJust, fromJust, catMaybes)
 
 import Stats.HammingDistance as Hamming
 
@@ -158,8 +160,8 @@ make_key g =
     key
 
 
-make_buffers :: B.ByteString -> B.ByteString -> [B.ByteString]
-make_buffers key buffer =
+make_buffers :: (B.ByteString -> B.ByteString) -> B.ByteString -> [B.ByteString]
+make_buffers encrypt_fn buffer =
   let
     max_size =
       64
@@ -168,38 +170,9 @@ make_buffers key buffer =
   in
     B.inits max_string
     |> map (\b -> B.append b buffer)
-    |> map (ecb_encrypt key)
-
-{-
-find_key_size :: [B.ByteString] -> Int
-find_key_size key buffer =
-
-    |> map (\(b1, b2) -> ((B.length b1), (detect (B.length b1) b2))
-    |> filter (\(_, (dst, _)) -> dst == 0)
-    |> maximumBy (compare `on` fst)
-    |> fst
-
--}
+    |> map encrypt_fn
 
 
-
-
-
-
-{-
-encrypt_buffer :: B.ByteString -> B.ByteString -> (B.ByteString, StdGen)
-encrypt_buffer key buffer =
-  let
-    pad_after =
-      "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4gYmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQgeW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK"
-      |> B64.decode
-
-    string_to_cipher =
-      B.append buffer pad_after
-
-  in
-    ecb_encrypt key string_to_cipher
--}
 
 detect_AES_mode :: Int -> B.ByteString -> Mode
 detect_AES_mode keysz str =
@@ -213,8 +186,26 @@ detect_AES_mode keysz str =
       else
         CBC
 
-detect_ecb_key_size :: Int -> B.ByteString -> Maybe Int
-detect_ecb_key_size keysz buffer =
+detect_ecb_key_size :: (B.ByteString -> B.ByteString) -> B.ByteString -> Maybe Int
+detect_ecb_key_size encrypt_fn buffer =
+  let
+    {- Feed identical bytes of your-string to the function 1 at a time --- start
+    with 1 byte ("A"), then "AA", then "AAA" and so on. Discover the block size
+    of the cipher. You know it, but do this step anyway. -}
+    first_buffers =
+      make_buffers encrypt_fn buffer
+
+    -- UNSAFE because AES.detect uses an unsafe minimum function
+    -- (but it works in this example)
+  in
+    map (detect_ecb_key_size' 8) first_buffers
+    |> filter isJust
+    |> map fromJust
+    |> safe_minimum
+
+
+detect_ecb_key_size' :: Int -> B.ByteString -> Maybe Int
+detect_ecb_key_size' keysz buffer =
   let
     is_found (i, bs) =
       i == 0
@@ -226,7 +217,7 @@ detect_ecb_key_size keysz buffer =
       then
         Nothing
       else
-        case (detect_ecb_key_size (keysz * 2) buffer) of
+        case (detect_ecb_key_size' (keysz * 2) buffer) of
 
           Just s ->
             Just s
@@ -249,19 +240,7 @@ detect key str =
   |> ((flip (,)) str)
 
 
-ecb_encrypt :: B.ByteString -> B.ByteString -> B.ByteString
-ecb_encrypt key string_to_cipher =
-  let
-    ctx =
-      init_AES_128 key
 
-    keysz =
-      B.length key
-
-  in
-    Bytes.blocks keysz string_to_cipher
-    |> map ((C.ecbDecrypt ctx) . (Bytes.pad keysz))
-    |> B.concat
 
 -- https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation#CBC
 cbc_encrypt :: B.ByteString -> B.ByteString -> B.ByteString -> B.ByteString
@@ -320,3 +299,27 @@ cbc_decrypt key iv string_to_decipher =
   in
     map (uncurry Xor.fixedXor) blocks_to_xor
     |> B.concat
+
+ecb_encrypt :: B.ByteString -> B.ByteString -> B.ByteString
+ecb_encrypt key string_to_cipher =
+  let
+    ctx =
+      init_AES_128 key
+
+    keysz =
+      B.length key
+
+  in
+    Bytes.blocks keysz string_to_cipher
+    |> map ((C.ecbEncrypt ctx) . (Bytes.pad keysz))
+    |> B.concat
+
+ecb_decrypt :: B.ByteString -> B.ByteString -> B.ByteString
+ecb_decrypt key string_to_decipher =
+  let
+    ctx =
+      init_AES_128 key
+
+  in
+    C.ecbDecrypt ctx string_to_decipher
+    |> Bytes.unpad

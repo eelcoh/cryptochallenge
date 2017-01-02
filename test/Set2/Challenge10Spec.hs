@@ -29,4 +29,4 @@ spec :: Spec
 spec = do
   describe "Challenge 10" $ do
     it "(given a string is n times keysize long) should encrypt and decrypt a string back and forth" $ do
-      (cbcDecrypt key iv $ cbcEncrypt key iv solution ) `shouldBe` solution
+      (cbc_decrypt key iv $ cbc_encrypt key iv solution ) `shouldBe` solution
