@@ -68,19 +68,16 @@ challenge13 g profile_name =
     key =
       AES.make_key g
 
-    -- partial function to 'store' the key in
-    -- profile_for :: String -> B.ByteString
-    --profile =
-    --  Profiles.profile_for profile_name
+    -- partially applied function to 'store' the key in
+    -- profile_for :: B.ByteString -> String -> B.ByteString
+    -- becomes
+    -- encrypt_fn :: String -> B.ByteString
 
     encrypt_fn =
-      Profiles.profile_for' key
+      Profiles.profile_for key
 
     decrypt_fn =
       AES.ecb_decrypt key
-
-    --enc_profile =
-    --  encrypt_fn profile
 
     dec_profile =
       Profiles.attack encrypt_fn profile_name

@@ -5,7 +5,6 @@ module Utils.Profiles
   , parse_kv_string
   , profile_for
   , profile
-  , profile_for'
   , encode
   , attack
   ) where
@@ -66,18 +65,14 @@ encode m =
     |> map encode_kv
     |> join "&"
 
+
 encode_kv :: (String, String) -> String
 encode_kv (k, v) =
   join "=" [k, v]
 
-profile_for :: String -> B.ByteString
-profile_for address =
-  profile address
-  |> encode
-  |> Bytes.stringToByteString
 
-profile_for' :: B.ByteString -> String -> B.ByteString
-profile_for' key address =
+profile_for :: B.ByteString -> String -> B.ByteString
+profile_for key address =
   address
   |> profile
   |> encode
@@ -86,11 +81,11 @@ profile_for' key address =
 
 
 {-
--- email=a@b.com&&uid=10&role=user
+-- email=a@b.com&uid=10&role=user
 -- 1234567890123456123456789012345612345
 -- 1               2               3               4
 
--- email=fool@bar.com=&uid=10&role=user
+-- email=fool1@bar.com&uid=10&role=user
 -- 12345678901234561234567890123456123456789
 -- 1               2               3               4
 
@@ -117,29 +112,14 @@ attack encrypt_fn address =
 
     admin_string =
       B.concat [(B.replicate 10 0x04), "admin", (B.replicate 11 0x04), "@gmail.com"]
-      -- B.append (Bytes.pad 16 ("admin"::B.ByteString)) ("@gmail.com"::B.ByteString)
 
     admin_segment =
       Bytes.byteStringToString admin_string
       |> encrypt_fn
       |> Bytes.blocks 16
       |> drop 1 -- we ignore the first block
-    --  |> take 1 -- and take the second
+      |> take 1 -- and take the second
       |> B.concat
-
-    --m_key_size =
-    --  AES.detect_ecb_key_size encrypt_fn prof
-
-    --enc_prof_size =
-    --  encrypt_fn prof
-    --  |> B.length
-
-    --prof_size =
-    --  B.length prof
-
-    --enc_profile =
-    --  encrypt_fn prof
 
   in
     B.append prof_segment admin_segment
-    -- (prof_segment, admin_segment)
